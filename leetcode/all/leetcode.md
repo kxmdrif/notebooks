@@ -22,6 +22,8 @@ class Solution {
 }
 ```
 ## 2. Add Two Numbers
+**solution**
+
 ```java
 class Solution {
     public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
@@ -2387,7 +2389,7 @@ Approach: merge sort
  */
 class Solution {
     public ListNode sortList(ListNode head) {
-        
+        //divide the list as average as possible
         if (head == null || head.next == null) return head;
         ListNode fast = head, slow = head, prev = null;
         while(fast != null && fast.next != null){
@@ -4312,6 +4314,30 @@ class Solution {
         int right = travel(root.right);
         max = Math.max(max, left + right + 1);
         return Math.max(left + 1, right + 1);
+    }
+}
+```
+
+## 560. Subarray Sum Equals K
+**solution**
+Approach : Using Hashmap
+
+- Time Complexity: O(n)
+- Space Complexity: O(n)
+
+```java
+class Solution {
+    public int subarraySum(int[] nums, int k) {
+        Map<Integer, Integer> preSum = new HashMap<>();
+        preSum.put(0, 1);
+        int sum = 0, res = 0;
+        for(int num : nums){
+            sum += num;
+            if (preSum.containsKey(sum - k))
+                res += preSum.get(sum - k);
+            preSum.put(sum, preSum.getOrDefault(sum , 0) + 1);
+        }
+        return res;
     }
 }
 ```

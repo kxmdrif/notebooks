@@ -170,3 +170,337 @@ class Solution {
    
 }
 ```
+
+## 20. Valid Parentheses
+
+**soultion**
+
+Approach: Stack
+
+- Time Complexity: O(n)
+- Space Complexity: O(1)
+
+```java
+class Solution {
+    public boolean isValid(String s) {
+        Stack<Character> stack = new Stack<>();
+        for(char c : s.toCharArray()){
+            if (c == '(')
+                stack.push(')');
+            else if (c == '[')
+                stack.push(']');
+            else if (c == '{')
+                stack.push('}');
+            else if(stack.isEmpty() || stack.pop() != c)
+                return false;
+        }
+        return stack.isEmpty();
+    }
+}
+```
+
+## 22. Generate Parentheses
+**solution**
+Approach: Backtracking
+
+- Time Complexity: O(4^n / sqrt(n))
+- Space Complexity: O(n)
+
+```java
+class Solution {
+    
+    public List<String> generateParenthesis(int n) {
+        List<String> res = new ArrayList<>();
+        dfs(n, 0, 0, "", res);
+        return res;
+    }
+    
+    public void dfs(int n, int left, int right, String comb, List<String> res){
+        //left is the number of '(', right is the number of ')'
+        //if left = n and right = n, add to result list
+        if (left == n && right == n){
+            res.add(comb);
+            return;
+        }
+        //the following condition can ensure that the combination is well-formed
+        
+        //if left < n , we can add '('
+        if (left < n)
+            dfs(n, left + 1, right, comb + '(', res);
+        //if right < left, we can add ')'
+        if (right < left)
+            dfs(n, left, right + 1, comb + ')', res);
+    }
+}
+```
+
+## 32. Longest Valid Parentheses
+**solution**
+
+Approach 1: Using Stack
+
+- Time Complexity: O(n)
+- Space Complexity: O(n)
+
+```java
+class Solution {
+    public int longestValidParentheses(String s) {
+        Stack<Integer> stack = new Stack<>();
+        stack.push(-1);
+        int maxlen = 0;
+        for(int i = 0; i <s.length(); i++){
+            if (s.charAt(i) == '(')
+                stack.push(i);
+            else{
+                stack.pop();
+                if (stack.isEmpty())
+                    stack.push(i);
+                maxlen = Math.max(maxlen, i - stack.peek());
+                
+            }
+        }
+        return maxlen;
+    }
+}
+```
+Approach 2: Without extra space
+
+- Time Complexity: O(n)
+- Space Complexity: O(1)
+
+```java
+public class Solution {
+    public int longestValidParentheses(String s) {
+        int left = 0, right = 0, maxlength = 0;
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == '(') {
+                left++;
+            } else {
+                right++;
+            }
+            if (left == right) {
+                maxlength = Math.max(maxlength, 2 * right);
+            } else if (right >= left) {
+                left = right = 0;
+            }
+        }
+        left = right = 0;
+        for (int i = s.length() - 1; i >= 0; i--) {
+            if (s.charAt(i) == '(') {
+                left++;
+            } else {
+                right++;
+            }
+            if (left == right) {
+                maxlength = Math.max(maxlength, 2 * left);
+            } else if (left >= right) {
+                left = right = 0;
+            }
+        }
+        return maxlength;
+    }
+}
+```
+
+## 49. Group Anagrams
+**solution**
+
+- Time complexity: O(NK), where N is the length of strs, and K is the maximum length of a string in strs
+- Space complexity: O(NK)
+
+```java
+
+//Categorize by Count
+class Solution {
+    public List<List<String>> groupAnagrams(String[] strs) {
+        Map<String, List<String>> map = new HashMap<>();
+        for(String str : strs){
+            char[] arr = new char[26];
+            for(char c : str.toCharArray())
+                arr[c - 'a']++;
+            
+            String key = String.valueOf(arr);
+            
+            List<String> value = map.getOrDefault(key,
+                                        new ArrayList<>());
+            value.add(str);
+            map.put(key, value);
+            
+        }
+        return new ArrayList<>(map.values());
+        
+    }
+}
+```
+
+## 76.  Minimum Window Substring
+
+```java
+class Solution {
+    public String minWindow(String s, String t) {
+        
+        if (s.isEmpty() || t.isEmpty()) return "";
+        
+        char[] chs = s.toCharArray();
+        char[] cht = t.toCharArray();
+        
+        int[] dictT = new int[128];
+        int[] window = new int[128];
+        for(char c : cht)
+            dictT[c]++;
+        
+        //start, end初始值为0以及最后结果[start, end)
+        //应对start, end在循环中从未更新的情况如s = "a", t = "aa"
+        //min也不可少否则只有start和end两者差为0无法更新最小值
+        int l = 0, r = 0, start = 0, end = 0;
+        int min = Integer.MAX_VALUE;
+        int required = cht.length;
+        //formed 代表窗口里面所有在T中出现的字符数量
+        //(每个字符数量小于等于T中数量,若超过则按T中数量算)的总和
+        int formed = 0;
+        
+        while(r < chs.length){
+            if (window[chs[r]]++ < dictT[chs[r]])
+                formed++;
+            while(l <= r && formed == required){
+                if (r - l + 1 < min){
+                    start = l;
+                    end = r + 1;
+                    min = r - l + 1;
+                }
+                if (window[chs[l]]-- <= dictT[chs[l]])
+                    formed--;
+                l++;
+            }
+            r++;
+        }
+        
+        return s.substring(start, end);
+        
+    }
+}
+```
+
+## 301. Remove Invalid Parentheses
+**solution**
+
+```java
+class Solution {
+    public List<String> removeInvalidParentheses(String s) {
+        List<String> res = new ArrayList<>();
+        remove(s, res, 0, 0, ')');
+        return res;
+    }
+    
+    private void remove(String s, List<String> res,
+                        int iStart, int jStart, char ch){
+        //each level remove one parentheses
+        for(int count = 0, i = iStart; i < s.length(); i++){
+            if (s.charAt(i) == '(' || s.charAt(i) == ')')
+                count += (s.charAt(i) == ch ? -1 : 1);
+            if (count >= 0) continue;
+            // We have an extra closed paren we need to remove
+            for(int j = jStart; j <= i; j++){
+                // Try removing one at each position, skipping duplicates
+                //example: (())) only remove index == 2
+                if (s.charAt(j) == ch &&
+                    (j == jStart || s.charAt(j - 1) != ch))
+                    //After remove the char at pos j, the sbustring before iStart = i
+                    //is valid, so we start at iStart on the next level of recursion.
+                    //-------------------------------------------------------------
+                    //jStart = j prevents duplicates(for example: 
+                    //remove idx=a then remove idx=b and remove idx=b then remove
+                    //idx = a will produce duplicate for a < b if we don't 
+                    //start at the last removal positation
+                    remove(s.substring(0, j) + s.substring(j + 1), res, i, j, ch);
+            }
+            return;// Stop here. The recursive calls handle the rest of the string.
+        }
+        
+        // No invalid closed parenthesis detected.
+        //Now check opposite direction, or reverse back to original direction.
+        String reversed = new StringBuilder(s).reverse().toString();
+        if (ch == ')')
+            remove(reversed, res, 0, 0, '(');
+        else//reverse two times => recover the original relative sequence
+            res.add(reversed);
+    }
+}
+```
+
+## 394. Decode String
+**solution**
+
+```java
+class Solution {
+    public String decodeString(String s) {
+        StringBuilder res = new StringBuilder();
+        Stack<Integer> nums = new Stack<>();
+        Stack<StringBuilder> strs = new Stack<>();
+        int count = 0;
+        //res stores the decode result until the current char
+        for(char c : s.toCharArray()){
+            if (Character.isDigit(c)){
+                count = 10 * count + c - '0';
+            }
+            
+            else if (c == '['){
+                nums.push(count);
+                count = 0;
+                strs.push(res);
+                res = new StringBuilder();
+            }else if (c == ']'){
+                int cnt = nums.pop();
+                StringBuilder tmp = res;
+                res = strs.pop();
+                for(int i = 0; i < cnt; i++)
+                    res.append(tmp);
+            }else{
+                res.append(c);
+            }
+            
+        }
+        return res.toString();
+    }
+}
+```
+
+## 438. Find All Anagrams in a String
+**solution**
+
+Approach: Similar To 76.  Minimum Window Substring
+
+```java
+class Solution {
+    public List<Integer> findAnagrams(String s, String p) {
+        char[] chs = s.toCharArray();
+        char[] chp = p.toCharArray();
+        
+        int[] dictP = new int[128];
+        int[] window = new int[128];
+        for(char c : chp)
+            dictP[c]++;
+        
+        int l = 0, r = 0;
+        int formed = 0, required = chp.length;
+        List<Integer> res = new ArrayList<>();
+        
+        while(r < chs.length){
+            if (window[chs[r]]++ < dictP[chs[r]])
+                formed++;
+            while(l <= r && formed == required){
+                //if this condition(r - l + 1 == chp.length) is true
+                //next time, the loop will end.
+                //because in this case, window and dictP is same;
+                if (r - l + 1 == chp.length)
+                    res.add(l);
+                if (window[chs[l]]-- <= dictP[chs[l]])
+                    formed--;
+                l++;
+            }
+            r++;
+        }
+        return res;
+    }
+}
+```
