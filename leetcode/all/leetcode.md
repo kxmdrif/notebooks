@@ -4341,3 +4341,167 @@ class Solution {
     }
 }
 ```
+
+## 581. Shortest Unsorted Continuous Subarray
+**solution**
+
+- Time Complexity: O(n)
+- Space Complexity: O(1)
+
+```java
+class Solution {
+    public int findUnsortedSubarray(int[] nums) {
+        int max = Integer.MIN_VALUE, min = Integer.MAX_VALUE;
+        //find the min and max in the unsorted part.
+        //we only need to find them in the descending pairs
+        for(int i = 0; i < nums.length - 1; i++){
+            if (nums[i] > nums[i + 1]){
+                max = Math.max(max, nums[i]);
+                min = Math.min(min, nums[i + 1]);
+            }
+        }
+        //find the first pos whose value is bigger than min from left to right
+        int l = 0, r = nums.length - 1;
+        while(l < nums.length && nums[l] <= min)
+            ++l;
+        //find the first pos whose value is bigger than min from right to left
+        while(r >= 0 && nums[r] >= max)
+            --r;
+        return r - l < 0 ? 0 : r - l + 1;
+    }
+}
+```
+
+## 617. Merge Two Binary Trees
+
+**solution**
+
+- Time Complexity: O(m)(m represents the minimum number of nodes from the two given trees)
+- Space Complexity: O(m)(worst, average is O(logm))
+
+```java
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public TreeNode mergeTrees(TreeNode t1, TreeNode t2) {
+        if (t1 == null) return t2;
+        if (t2 == null) return t1;
+        TreeNode root = new TreeNode(t1.val + t2.val);
+        root.left = mergeTrees(t1.left, t2.left);
+        root.right = mergeTrees(t1.right, t2.right);
+        return root;
+    }
+}
+/*----------------------or----------------------------------*/
+class Solution {
+    public TreeNode mergeTrees(TreeNode t1, TreeNode t2) {
+        if (t1 == null) return t2;
+        if (t2 == null) return t1;
+        //resue t1
+        t1.val += t2.val
+        t1.left = mergeTrees(t1.left, t2.left);
+        t1.right = mergeTrees(t1.right, t2.right);
+        return t1;
+    }
+}
+
+```
+
+## 621. Task Scheduler
+**solution**
+- Time Complexity: O(n)
+- Space Complexity: O(26)
+
+
+```java
+class Solution {
+    public int leastInterval(char[] tasks, int n) {
+        int[] count = new int[26];
+        for(char c : tasks)
+            count[c - 'A']++;
+        Arrays.sort(count);
+        int idx = 25;
+        while(idx >= 0 && count[idx] == count[25])
+              idx--;
+        return Math.max(tasks.length,
+                        25 - idx + (n + 1) * (count[25] - 1));
+        
+    }
+}
+```
+
+First consider the most frequent characters, we can determine their relative positions first and use them as a frame to insert the remaining less frequent characters. Here is a proof by construction:
+
+Let F be the set of most frequent chars with frequency k.
+We can create k chunks, each chunk is identical and is a string consists of chars in F in a specific fixed order.
+Let the heads of these chunks to be H_i; then H_2 should be at least n chars away from H_1, and so on so forth; then we insert the less frequent chars into the gaps between these chunks sequentially one by one ordered by frequency in a decreasing order and try to fill the k-1 gaps as full or evenly as possible each time you insert a character. In summary, append the less frequent characters to the end of each chunk of the first k-1 chunks sequentially and round and round, then join the chunks and keep their heads' relative distance from each other to be at least n.
+
+Examples:
+
+AAAABBBEEFFGG 3
+
+here X represents a space gap:
+```
+Frame: "AXXXAXXXAXXXA"
+insert 'B': "ABXXABXXABXXA" <--- 'B' has higher frequency than the other characters, insert it first.
+insert 'E': "ABEXABEXABXXA"
+insert 'F': "ABEFABEXABFXA" <--- each time try to fill the k-1 gaps as full or evenly as possible.
+insert 'G': "ABEFABEGABFGA"
+```
+
+AACCCBEEE 2
+```
+3 identical chunks "CE", "CE CE CE" <-- this is a frame
+insert 'A' among the gaps of chunks since it has higher frequency than 'B' ---> "CEACEACE"
+insert 'B' ---> "CEABCEACE" <----- result is tasks.length;
+```
+
+AACCCDDEEE 3
+```
+3 identical chunks "CE", "CE CE CE" <--- this is a frame.
+Begin to insert 'A'->"CEA CEA CE"
+Begin to insert 'B'->"CEABCEABCE" <---- result is tasks.length;
+```
+
+ACCCEEE 2
+```
+3 identical chunks "CE", "CE CE CE" <-- this is a frame
+Begin to insert 'A' --> "CEACE CE" <-- result is (c[25] - 1) * (n + 1) + 25 -i = 2 * 3 + 2 = 8
+```
+
+## 647. Palindromic Substrings
+**solution**
+
+- Time Complexity: O(n^2)
+- Space Complexity: O(1)
+
+```java
+class Solution {
+    public int countSubstrings(String s) {
+        int res = 0;
+        for(int i = 0; i < s.length(); i++){
+            res += appendCenter(s, i, i);
+            res += appendCenter(s, i, i + 1);
+        }
+        return res;
+    }
+    
+    private int appendCenter(String s, int l, int r){
+        int count = 0;
+        while(l >= 0 && r < s.length()
+              && s.charAt(l) == s.charAt(r)){
+            count++;
+            l--;
+            r++;
+        }
+        return count;
+    }
+}
+```

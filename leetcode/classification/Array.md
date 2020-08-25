@@ -751,3 +751,34 @@ class Solution {
     }
 }
 ```
+
+## 581. Shortest Unsorted Continuous Subarray
+**solution**
+
+- Time Complexity: O(n)
+- Space Complexity: O(1)
+
+```java
+class Solution {
+    public int findUnsortedSubarray(int[] nums) {
+        int max = Integer.MIN_VALUE, min = Integer.MAX_VALUE;
+        //find the min and max in the unsorted part.
+        //we only need to find them in the descending pairs
+        for(int i = 0; i < nums.length - 1; i++){
+            if (nums[i] > nums[i + 1]){
+                max = Math.max(max, nums[i]);
+                min = Math.min(min, nums[i + 1]);
+            }
+        }
+        //find the first pos whose value is bigger than min from left to right
+        int l = 0, r = nums.length - 1;
+        while(l < nums.length && nums[l] <= min)
+            ++l;
+        //find the first pos whose value is bigger than min from right to left
+        while(r >= 0 && nums[r] >= max)
+            --r;
+        return r - l < 0 ? 0 : r - l + 1;
+    }
+}
+```
+
