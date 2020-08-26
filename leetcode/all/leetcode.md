@@ -4448,33 +4448,33 @@ Examples:
 AAAABBBEEFFGG 3
 
 here X represents a space gap:
-```
-Frame: "AXXXAXXXAXXXA"
-insert 'B': "ABXXABXXABXXA" <--- 'B' has higher frequency than the other characters, insert it first.
-insert 'E': "ABEXABEXABXXA"
-insert 'F': "ABEFABEXABFXA" <--- each time try to fill the k-1 gaps as full or evenly as possible.
-insert 'G': "ABEFABEGABFGA"
-```
+
+>Frame: "AXXXAXXXAXXXA"
+>insert 'B': "ABXXABXXABXXA" <--- 'B' has higher frequency than the other characters, insert it first.
+>insert 'E': "ABEXABEXABXXA"
+>insert 'F': "ABEFABEXABFXA" <--- each time try to fill the k-1 gaps as full or evenly as possible.
+>insert 'G': "ABEFABEGABFGA"
+
 
 AACCCBEEE 2
-```
-3 identical chunks "CE", "CE CE CE" <-- this is a frame
-insert 'A' among the gaps of chunks since it has higher frequency than 'B' ---> "CEACEACE"
-insert 'B' ---> "CEABCEACE" <----- result is tasks.length;
-```
+
+>3 identical chunks "CE", "CE CE CE" <-- this is a frame
+>insert 'A' among the gaps of chunks since it has higher frequency than 'B' ---> "CEACEACE"
+>insert 'B' ---> "CEABCEACE" <----- result is tasks.length;
+
 
 AACCCDDEEE 3
-```
-3 identical chunks "CE", "CE CE CE" <--- this is a frame.
-Begin to insert 'A'->"CEA CEA CE"
-Begin to insert 'B'->"CEABCEABCE" <---- result is tasks.length;
-```
+
+>3 identical chunks "CE", "CE CE CE" <--- this is a frame.
+>Begin to insert 'A'->"CEA CEA CE"
+>Begin to insert 'B'->"CEABCEABCE" <---- result is tasks.length;
+
 
 ACCCEEE 2
-```
-3 identical chunks "CE", "CE CE CE" <-- this is a frame
-Begin to insert 'A' --> "CEACE CE" <-- result is (c[25] - 1) * (n + 1) + 25 -i = 2 * 3 + 2 = 8
-```
+
+>3 identical chunks "CE", "CE CE CE" <-- this is a frame
+>Begin to insert 'A' --> "CEACE CE" <-- result is (c[25] - 1) * (n + 1) + 25 -i = 2 * 3 + 2 = 8
+
 
 ## 647. Palindromic Substrings
 **solution**
@@ -4502,6 +4502,29 @@ class Solution {
             r++;
         }
         return count;
+    }
+}
+```
+
+## 739. Daily Temperatures
+**solution**  
+Approach: decreasing stack
+
+- Time Complexity: O(n)
+- Space Complexity: O(n)
+
+```java
+class Solution {
+    public int[] dailyTemperatures(int[] T) {
+        int[] res = new int[T.length];
+        Stack<Integer> stack = new Stack<>();
+        for(int i = T.length - 1; i >= 0; i--){
+            while(!stack.isEmpty() && T[i] >= T[stack.peek()])
+                stack.pop();
+            res[i] = stack.isEmpty() ? 0 : stack.peek() - i;
+            stack.push(i);
+        }
+        return res;
     }
 }
 ```
