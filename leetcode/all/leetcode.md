@@ -3664,7 +3664,7 @@ class Solution {
                     //jStart = j prevents duplicates(for example: 
                     //remove idx=a then remove idx=b and remove idx=b then remove
                     //idx = a will produce duplicate for a < b if we don't 
-                    //start at the last removal positation
+                    //start at the last removal position
                     remove(s.substring(0, j) + s.substring(j + 1), res, i, j, ch);
             }
             return;// Stop here. The recursive calls handle the rest of the string.
