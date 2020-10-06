@@ -307,7 +307,7 @@ class Solution {
 }
 ```
 
-## ## 739. Daily Temperatures
+## 739. Daily Temperatures
 **solution**  
 Approach: decreasing stack
 
@@ -324,6 +324,82 @@ class Solution {
                 stack.pop();
             res[i] = stack.isEmpty() ? 0 : stack.peek() - i;
             stack.push(i);
+        }
+        return res;
+    }
+}
+```
+
+## 227. Basic Calculator II
+**solution**
+Approach1: Use stack
+
+- Time Complexity: O(n)
+- Space Complexity: O(n)
+
+```java
+class Solution {
+    public int calculate(String s) {
+        char sign = '+';
+        int num = 0;
+        Stack<Integer> stack = new Stack<>();
+        for(int i = 0; i < s.length(); i++){
+            if(Character.isDigit(s.charAt(i)))
+                num = 10 * num + s.charAt(i) - '0';
+            if((!Character.isDigit(s.charAt(i)) && s.charAt(i) != ' ')
+                || i == s.length() - 1){
+                if (sign == '+')
+                    stack.push(num);
+                else if (sign == '-')
+                    stack.push(-num);
+                else if (sign == '*')
+                    stack.push(stack.pop() * num);
+                else if (sign == '/')
+                    stack.push(stack.pop() / num);
+                sign = s.charAt(i);
+                num = 0;
+            }
+        }
+        int res = 0;
+        while(!stack.isEmpty()) res += stack.pop();
+        return res;
+    }
+}
+```
+
+Approach2: Without stack
+
+- Time Complexity: O(n)
+- Space Complexity: O(1)
+
+```java
+class Solution {
+    public int calculate(String s) {
+        char op = '+';
+        int num = 0;
+        int res = 0;
+        //cur--> temp section before operator s[i]
+        //Example: 1 + 7 * 8 (1 and 7 * 8 is section)
+        int cur = 0;
+        for(int i = 0; i < s.length(); i++){
+            char c = s.charAt(i);
+            if (Character.isDigit(c))
+                num = 10 * num + c - '0';
+            if (i == s.length() - 1 || 
+                (!Character.isDigit(c) && c != ' ')){
+                switch(op){
+                    case '+': cur = num; break;
+                    case '-': cur = -num; break;
+                    case '*': cur = cur * num; break;
+                    case '/': cur = cur / num; break;    
+                }
+                if (c == '+' || c == '-' || i == s.length() - 1){
+                    res += cur;
+                    cur = 0;
+                }
+                num = 0;
+                op = c;
+            }
         }
         return res;
     }
